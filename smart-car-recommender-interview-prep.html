@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Car Recommender – Viva Prep</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d2127;--mut:#5b6470;--card:#fff;--bd:#dfe3e8;--acc:#0b6b4d;--accbg:#e4f3ec;--warn:#8a5a00;--warnbg:#fff4d9;--code:#f0f2f4}
+:root[data-theme=dark]{--bg:#12161b;--fg:#e6e9ed;--mut:#9aa4b0;--card:#1a2027;--bd:#2c343d;--acc:#4cc59a;--accbg:#173528;--warn:#f0c15a;--warnbg:#3a2f12;--code:#232b33}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12161b;--fg:#e6e9ed;--mut:#9aa4b0;--card:#1a2027;--bd:#2c343d;--acc:#4cc59a;--accbg:#173528;--warn:#f0c15a;--warnbg:#3a2f12;--code:#232b33}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:16px}
+h1{font-size:1.8rem;margin:.2em 0}h2{font-size:1.35rem;margin-top:2.2em;padding-bottom:.25em;border-bottom:2px solid var(--acc)}h3{font-size:1.05rem;margin-bottom:.2em}
+a{color:var(--acc)}code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em}
+pre{background:var(--code);padding:12px;border-radius:8px;overflow-x:auto;font-size:.85em}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+button,input{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 12px}
+button{cursor:pointer}button:hover{border-color:var(--acc)}button.on{background:var(--accbg);border-color:var(--acc)}
+.note{background:var(--warnbg);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;margin:14px 0}
+.ok{background:var(--accbg);border-left:4px solid var(--acc);padding:10px 14px;border-radius:6px;margin:14px 0}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--accbg)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin:12px 0}
+.flow div{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font-size:.85rem;flex:1 1 130px}
+.flow div b{display:block;color:var(--acc)}.flow i{align-self:center;color:var(--mut);font-style:normal}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stats div{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px;text-align:center}.stats b{display:block;font-size:1.5rem;color:var(--acc)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:2}
+.tools input{flex:1 1 200px}
+details{background:var(--card);border:1px solid var(--bd);border-radius:8px;margin:8px 0;padding:0 12px}
+summary{cursor:pointer;padding:10px 0;font-weight:600}.star{color:#d99a00}
+.fu{color:var(--mut);border-top:1px dashed var(--bd);padding-top:6px;margin-top:6px}
+.cat{margin-top:18px;color:var(--mut);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+nav ol{columns:2;font-size:.92rem}@media(max-width:600px){nav ol{columns:1}h1{font-size:1.5rem}}
+dt{font-weight:700;margin-top:8px}dd{margin:0 0 0 16px}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><h1>Smart Car Recommender – viva prep</h1><button id="theme" type="button">Theme: auto</button></div>
+<p>Study sheet for the project viva. Every number comes from the repository (<code>README.md</code>, <code>SPEC.md</code>, source and tests) or from a local <code>npm test</code> run on 27 Oct 2026 (105 of 105 passed). Nothing here comes from a live deployment or an outside data source.</p>
+<div class="note"><b>Disclosure.</b> The code was generated with an AI assistant (Claude Code) from a written specification (<code>SPEC.md</code> ends with "Ready for Claude Code generation"). I should be ready to explain every module myself. The repo has two commits (11 Oct 2026). The page was written in the same way, from the files, and I checked the claims against the code.</div>
+<nav><b>Contents</b><ol>
+<li><a href="#s1">2-minute pitch</a></li><li><a href="#s2">Architecture and request flow</a></li><li><a href="#s3">How each module works</a></li><li><a href="#s4">Tech-stack decisions</a></li><li><a href="#s5">Development process</a></li><li><a href="#s6">Testing and CI</a></li><li><a href="#s7">Results and evaluation</a></li><li><a href="#s8">Limitations and next steps</a></li><li><a href="#s9">Live demo script</a></li><li><a href="#s10">Glossary</a></li><li><a href="#s11">Question bank</a></li></ol></nav>
+
+<h2 id="s1">1. Two-minute pitch</h2>
+<p><b>Problem.</b> The spec says buyers face 100+ models, spend 10+ hours researching with no clear prioritisation, and overlook environmental impact. (That figure is the spec's own claim, not something I measured.)</p>
+<p><b>Users.</b> A car buyer with a budget of $10,000–$50,000 who states a location, a vehicle type, a primary use, and optionally a minimum reliability and a maximum CO₂ per mile.</p>
+<p><b>What it does.</b> It filters a 50-car catalog, scores each remaining car 0–100 on five dimensions (budget fit, 5-year total cost of ownership, emissions, reliability, resale), and returns the top 5 with a plain-English explanation and an itemised cost breakdown.</p>
+<p><b>What makes it stand out.</b> The ranking is transparent and reproducible: fixed weights, documented formulas, deterministic tie-breaks, and regional insurance and electricity costs feed the TCO. Cost and emissions sit side by side, not just sticker price.</p>
+<div class="stats">
+<div><b>105</b>tests, all passing</div><div><b>50</b>cars in catalog</div><div><b>5</b>scoring dimensions</div><div><b>28,996</b>$ Tesla Model 3 TCO (CA), matches spec</div><div><b>2</b>commits</div></div>
+<div class="note"><b>Honest framing:</b> the "proof" is that the code matches its own spec and hand-calculated values. It is not proof that the recommendations are good for real buyers (see section 7).</div>
+
+<h2 id="s2">2. Architecture and request flow</h2>
+<p>A single Next.js app: a React client form, one API route, and a pure TypeScript engine. There is no database, no auth, and no external service call.</p>
+<div class="flow">
+<div><b>Browser</b>RecommendationForm collects 6 inputs</div><i>→</i>
+<div><b>POST /api/recommend</b>route.ts parses JSON</div><i>→</i>
+<div><b>InputValidator</b>400 on first error; defaults applied</div><i>→</i>
+<div><b>resolveLocation</b>zip/state → insurance × and $/kWh</div><i>→</i>
+<div><b>VehicleRanker</b>filter → score → sort → top 5 → explain</div><i>→</i>
+<div><b>JSON</b>recommendations + meta (404 if none)</div><i>→</i>
+<div><b>ResultsCard</b>rank, scores, collapsible TCO</div></div>
+<p>Data sits in <code>data/vehicles.ts</code> (hardcoded array). The engine in <code>lib/engine/</code> has no framework imports, so it is tested directly with Vitest without a server.</p>
+
+<h2 id="s3">3. How each module works</h2>
+<div class="tw"><table><tr><th>Module</th><th>Responsibility</th><th>Key detail</th></tr>
+<tr><td><code>lib/engine/validator.ts</code></td><td>Validates and normalises a <code>UserProfile</code></td><td>Budget 10k–50k, reliability 50–100, CO₂ 100–300; missing reliability/CO₂ default to 70/250.</td></tr>
+<tr><td><code>lib/db/locations.ts</code></td><td>Resolves zip/state/DEFAULT to regional data</td><td>CA 1.3× / $0.18, TX 0.95× / $0.12, NY 1.25× / $0.20 (NY is an estimate), default 1.0× / $0.15. Zip→state by 3-digit prefix, only for CA/TX/NY.</td></tr>
+<tr><td><code>lib/engine/calculator.ts</code></td><td>5-year TCO</td><td>60,000 mi, $3.50/gal, EV 3.5 mi/kWh, hybrid mpg × 0.6, insurance base $1,200, maintenance $600/$900/$1,200 by reliability tier. Total is the sum of rounded parts.</td></tr>
+<tr><td><code>lib/engine/scorer.ts</code></td><td>Five 0–100 scores + weighted total</td><td>Weights 25/25/20/20/10. TCO score is anchored to 2× the user's budget, not to the other candidates.</td></tr>
+<tr><td><code>lib/engine/ranker.ts</code></td><td>Filter, score, sort, explain</td><td>Hard filters: price ≤ 1.2×budget, reliability ≥ min, CO₂ ≤ max. Then a soft type/use preference sorts first; ties by total, lower TCO, then id.</td></tr>
+<tr><td><code>lib/engine/constants.ts</code></td><td>All spec numbers in one place</td><td>Makes assumptions easy to find and change.</td></tr>
+<tr><td><code>app/api/recommend/route.ts</code></td><td>HTTP layer</td><td>400 <code>VALIDATION_ERROR</code>, 404 <code>NO_MATCHES</code>, 500 <code>INTERNAL_ERROR</code> (details logged, not returned). Adds <code>meta</code> with timing and counts.</td></tr>
+<tr><td><code>components/RecommendationForm.tsx</code>, <code>ResultsCard.tsx</code>, <code>app/page.tsx</code></td><td>UI</td><td>Client components; the form calls <code>fetch('/api/recommend')</code>.</td></tr>
+</table></div>
+<h3>The scoring formulas</h3>
+<pre>budgetFit = 100 if price ≤ budget else budget/price × 100   (0 beyond 120%)
+tco       = max(0, 100 − TCO / (2 × budget) × 100)
+emissions = 100 if &lt;150 g/mi; 100 − (CO₂−150)/150 × 80 up to 300; 20 above
+reliability = vehicle score as-is      resale = 5-yr retained % as-is
+total = .25·budgetFit + .25·tco + .20·emissions + .20·reliability + .10·resale</pre>
+<h3>Soft preference ordering</h3>
+<p>Type fit (electric = 1; hybrid counts 0.5 for an "electric" request; otherwise body type match) plus use fit (luxury, off-road, family) is summed. Cars with a higher preference sum sort ahead of cars with a higher total score. So a better-matching, lower-scored car can outrank a higher-scored non-match. This is deliberate, and I should say so before being asked.</p>
+
+<h2 id="s4">4. Tech-stack decisions</h2>
+<div class="tw"><table><tr><th>Choice</th><th>Why</th></tr>
+<tr><td>Next.js (App Router) 16 + React 19</td><td>One project hosts both UI and API route; deploys to Vercel with no config (README).</td></tr>
+<tr><td>TypeScript</td><td>The spec requires full typing and no <code>any</code>; shared types in <code>lib/types</code> keep API and UI in sync.</td></tr>
+<tr><td>Tailwind CSS 4</td><td>Fast styling without separate CSS files.</td></tr>
+<tr><td>Vitest</td><td>Fast, TypeScript-friendly; the engine is pure, so tests need no server.</td></tr>
+<tr><td>Hardcoded catalog</td><td>Spec MVP decision ("replace with database in v2"). Simple, deterministic, testable. Trade-off: data is not live.</td></tr>
+<tr><td>Rule-based scoring, no ML</td><td>Explainable, no training data needed, results can be verified by hand.</td></tr>
+<tr><td>No paid APIs or LLM calls</td><td>Explanations are a string template, not generated text.</td></tr>
+</table></div>
+<p><code>AGENTS.md</code> warns that this Next.js version has breaking changes versus older versions, so conventions should be checked against <code>node_modules/next/dist/docs/</code>.</p>
+
+<h2 id="s5">5. Development process</h2>
+<ul><li><b>Spec first.</b> <code>SPEC.md</code> (v1.0, about 1,100 lines) defines data structures, formulas, validation, error handling, test cases, examples and a 5-phase checklist (data/types, engine, API, frontend, testing/deploy; "3 days (MVP)").</li>
+<li><b>Implementation with an AI assistant</b> following the spec. Commit 1 (<code>43343c6</code>, "Phase 1-2 complete: Backend engine + frontend + API working") contains the engine, API, UI and tests. Commit 2 (<code>2173673</code>) adds the README.</li>
+<li><b>Spec conflicts were resolved in code, not hidden.</b> Example: the spec text claims a TCO score of 85 for the Tesla but its own formula gives 64; the test file records this and keeps 64.</li>
+<li><b>Not in the repo:</b> design notes beyond the spec, issue history, or review records. I can't show a step-by-step build log.</li></ul>
+
+<h2 id="s6">6. Testing and CI</h2>
+<div class="tw"><table><tr><th>Suite</th><th>Tests</th><th>Covers</th></tr>
+<tr><td>validator</td><td>29</td><td>Ranges, defaults, bad enums</td></tr><tr><td>calculator</td><td>17</td><td>TCO vs hand-calculated values, regions</td></tr>
+<tr><td>ranker</td><td>21</td><td>Filtering, ordering, explanation length and rank</td></tr><tr><td>scorer</td><td>14</td><td>Each score in 0–100, weights</td></tr>
+<tr><td>scenarios</td><td>10</td><td>SPEC examples 1–3 and ranking cases 4.2, 4.3</td></tr>
+<tr><td>api</td><td>9</td><td>Status codes 200/400/404</td></tr><tr><td>format</td><td>5</td><td>Currency formatting</td></tr></table></div>
+<p>Total: 105, run with <code>npm test</code> (Vitest 2.1.9). Run time was under a second on my machine.</p>
+<div class="note"><b>Gaps.</b> There is <b>no CI</b> (no <code>.github</code> folder), so tests run only when someone runs them. There are no browser or UI tests, no load test, and I did not confirm any test of the 500 path. The tests were written alongside the code from the same spec, so they mostly check "code matches spec", not "spec is right".</div>
+
+<h2 id="s7">7. Results and evaluation</h2>
+<div class="ok"><b>What the results show</b><ul>
+<li>Spec Example 1 (CA, $40k EV): Tesla Model 3 ranks #1; scores 100/64/100/88/65, total 85; TCO $28,996 (fuel $3,086, insurance $7,410, maintenance $4,500, resale $26,000).</li>
+<li>Spec Example 2 (TX, $25k SUV): Honda CR-V ranks #1, all five are SUVs, all ≤ $30,000, TCO within $500 of the spec's ~$28,500.</li>
+<li>Spec Example 3 (a $15k luxury EV, 90+ reliability, ≤100 g/mi) returns no recommendations (404 <code>NO_MATCHES</code> in the API).</li>
+<li>Case 4.2: a $25k sedan buyer gets a Corolla or Civic first. Case 4.3: a $50k luxury buyer sees four luxury sedans first, led by the Lexus ES 300h.</li>
+<li>README's sample response shows <code>processTime: 25</code> ms and 12 candidates of 50 for Example 1.</li></ul></div>
+<div class="note"><b>What the results do NOT show</b><ul>
+<li><b>Real-world accuracy.</b> Prices, resale %, reliability and CO₂ are rounded estimates calibrated to the spec examples, not manufacturer, EPA or Consumer Reports data. The catalog was shaped so the spec's expected answers come out.</li>
+<li><b>User value.</b> No user study, no comparison against other recommenders, no ground truth for "best car".</li>
+<li><b>Performance.</b> One logged 25 ms sample is not a benchmark. The spec's "&lt; 1 second" criterion was not measured under load.</li>
+<li><b>Deployment.</b> The spec checklist says "Deployed to Vercel", but nothing in the repo records a live URL. I haven't verified one.</li>
+<li><b>Weights.</b> 25/25/20/20/10 come from the spec, with no sensitivity analysis or tuning.</li></ul></div>
+
+<h2 id="s8">8. Limitations, trade-offs, next steps</h2>
+<ul>
+<li><b>Estimated data</b>, hardcoded: 50 cars (9 electric, 10 hybrid, 31 gas, 0 diesel; 22 sedan, 24 SUV, 4 truck; 6 luxury). Diesel is supported in code but has no catalog entries.</li>
+<li><b>Hybrid penalty.</b> The spec's 0.6 factor costs hybrids as less efficient than the same car on gas. This is a modelling choice I'd flag as questionable.</li>
+<li><b>No lower budget bound.</b> A $50k budget includes cheap cars; they score 100 on budget fit.</li>
+<li><b>No-match zones.</b> The cheapest car is $17,500, so budgets under about $14,600 return nothing; strict filter combinations can too.</li>
+<li><b>Coarse regions.</b> Only CA, TX, NY have their own values; other locations use the national default. Gas is a fixed $3.50 and mileage a fixed 12,000/year.</li>
+<li><b>Preference ordering</b> can put a lower-scoring match ahead of a higher-scoring non-match.</li>
+<li><b>Stateless.</b> No accounts, saved searches or analytics. Invalid locations silently fall back to DEFAULT.</li>
+<li><b>Next steps (my proposals):</b> real data source behind a database (spec v2), CI on push, UI tests, user-adjustable weights, fuel-price and mileage inputs, more states, sensitivity analysis of the weights.</li></ul>
+
+<h2 id="s9">9. Live demo script</h2>
+<ol>
+<li>Run <code>npm install</code> then <code>npm run dev</code> and open http://localhost:3000. (Say plainly that this is local unless a deployed URL is confirmed.)</li>
+<li><b>Example 1:</b> budget 40000, daily commute, zip 90210, type electric, reliability 80, CO₂ 150, feature "autopilot". Expect Tesla Model 3 #1, score 85, TCO $28,996. Open the cost breakdown.</li>
+<li><b>Example 2:</b> budget 25000, family trips, zip 77001, SUV, reliability 75. Expect Honda CR-V first and only SUVs.</li>
+<li><b>Change one input</b> (zip 90210 → 77001 for the Tesla) and show insurance and electricity cost shift.</li>
+<li><b>Failure case:</b> budget 15000, electric, reliability 90, CO₂ 100. Expect a "no match" message; then a budget of 5000 for a validation error.</li>
+<li>API: <code>curl -X POST localhost:3000/api/recommend -H "Content-Type: application/json" -d '{...}'</code> and point at <code>meta</code>.</li>
+<li>Finish with <code>npm test</code>: 105 passing.</li></ol>
+<p>Fallback if the UI misbehaves: run the tests and show <code>__tests__/scenarios.test.ts</code>.</p>
+
+<h2 id="s10">10. Glossary</h2>
+<dl>
+<dt>TCO</dt><dd>Total cost of ownership over 5 years: purchase + fuel + insurance + maintenance − resale.</dd>
+<dt>Budget fit</dt><dd>0–100 score for how close the price is to the budget; 100 at or under budget.</dd>
+<dt>Soft vs hard filter</dt><dd>Hard filters remove cars; soft preferences only reorder them.</dd>
+<dt>g/mile CO₂</dt><dd>Grams of CO₂ per mile; here a spec-calibrated estimate, not an EPA figure.</dd>
+<dt>Resale value (5 yr)</dt><dd>Percentage of purchase price retained after 5 years.</dd>
+<dt>App Router / route handler</dt><dd>Next.js file-based routing; <code>route.ts</code> exports an HTTP method function.</dd>
+<dt>Vitest</dt><dd>The JavaScript test runner used here.</dd>
+<dt>Deterministic</dt><dd>Same input gives the same output; the tie-break chain ensures it.</dd>
+<dt>Spec-driven development</dt><dd>Writing a detailed specification first, then implementing and testing against it.</dd>
+<dt>Sensitivity analysis</dt><dd>Checking how results change when weights or assumptions change (not done here).</dd></dl>
+
+<h2 id="s11">11. Question bank</h2>
+<p>Tap a question for a model answer and a likely follow-up. ★ marks the ones I expect most.</p>
+<div class="tools"><input id="q" type="search" placeholder="Search questions…" aria-label="Search questions"><button id="starOnly" type="button">★ only</button><button id="openAll" type="button">Expand all</button><button id="closeAll" type="button">Collapse all</button></div>
+<div id="count" class="cat"></div>
+<div id="bank"></div>
+</main>
+<script>
+const QA=[
+["Product","★","What problem does this solve, and for whom?","It helps a buyer with a $10k–$50k budget narrow a catalog to five ranked options, weighing cost of ownership, emissions, reliability and resale, not just price. The spec frames the problem as buyers overwhelmed by 100+ models and spending 10+ hours researching.","Is that 10-hour figure measured? No, it is the spec's assertion, I did not validate it."],
+["Product","★","Why not just sort by price?","Sticker price hides 5-year costs. In the Tesla example, fuel $3,086, insurance $7,410 and maintenance $4,500 sit on top of a $40,000 price, minus $26,000 resale. TCO makes cars with different fuel types comparable.","Does TCO dominate the ranking? It is 25% of the total, same as budget fit."],
+["Product","","Who are the users and what do they enter?","Buyers who give budget, primary use, location, vehicle type, and optionally minimum reliability, maximum CO₂ and desired features.","What if they leave optional fields empty? Reliability defaults to 70 and CO₂ to 250."],
+["Algorithm","★","Walk me through what happens to one request.","Validate and apply defaults → resolve location → hard-filter (price ≤ 1.2×budget, reliability ≥ min, CO₂ ≤ max) → compute TCO and five scores per car → sort → take 5 → write explanations → return JSON with meta.","Where is each step in code? validator.ts, locations.ts, ranker.ts (filterCandidates, rankVehicles), calculator.ts, scorer.ts."],
+["Algorithm","★","How is the total score computed and why those weights?","Weighted average: budget fit 25%, TCO 25%, emissions 20%, reliability 20%, resale 10%. The weights come from the spec; the code comment justifies them as cost 50%, environment and reliability 20% each, resale a minor factor.","Did you test other weights? No. There is no sensitivity analysis, and that is a real limitation."],
+["Algorithm","★","How is TCO calculated?","Purchase + fuel + insurance + maintenance − resale over 5 years at 12,000 mi/year. Gas fuel = 60,000/mpg × $3.50; EV = 60,000/3.5 × local $/kWh; insurance = $1,200 × location × type multiplier × 5; maintenance $600/$900/$1,200 per year by reliability tier.","Why is the total a sum of rounded parts? So the displayed breakdown always adds up exactly."],
+["Algorithm","★","Why is the hybrid fuel cost divided by mpg × 0.6?","The spec assumes hybrids achieve 60% of nominal mpg. It makes a hybrid look worse than the same car on gas. I'd call it a questionable modelling choice that I inherited from the spec and documented in the README.","How would you fix it? Use real-world mpg or EPA combined figures with no discount, and validate against known TCO sources."],
+["Algorithm","","How is the TCO score defined?","100 − TCO/(2×budget)×100, floored at 0. It is anchored to the user's budget, so a score means the same thing whichever cars are in the pool.","What are the downside? A higher budget makes every car's TCO score look better, so scores are not comparable across users."],
+["Algorithm","","How is the emissions score defined?","100 under 150 g/mi, then linear down to 20 at 300 g/mi, and 20 above. Very dirty cars are penalised but never zeroed.","Is CO₂ real EPA data? No, spec-calibrated estimates."],
+["Algorithm","★","What is the 'soft preference' and is it a bug that it overrides the score?","Cars matching the user's vehicle type and primary use sort first, then total score, then lower TCO, then id. It is intentional: a user who asks for an SUV should see SUVs first, and other cars backfill if few match.","Can a lower-scoring car outrank a higher-scoring one? Yes, when its preference fit is higher."],
+["Algorithm","","How do you guarantee a deterministic ranking?","The sort chain ends in total score, TCO and finally id string comparison, so equal scores never reorder randomly.","Why does that matter? Reproducible tests and explainable outputs."],
+["Algorithm","","How are explanations generated, and are they AI-written?","A string template fills in the car name, its top-scoring dimension, a second strength (or a matched requested feature), price and rank. There is no LLM call at runtime.","Can they exceed 200 chars? The code comment argues the bounded parts keep it between 100 and 200, and tests check length."],
+["Data","★","Where does the car data come from? Is it accurate?","It is a hardcoded array of 50 cars with rounded estimates calibrated to the spec's examples. It is not live manufacturer, EPA or review-site data. The file header says to verify before presenting numbers as fact.","Did you tune the data to make tests pass? The catalog was calibrated to the spec's examples, so that expected results appear. This is a limitation, and results should not be read as independent validation."],
+["Data","","How does location work?","A zip is mapped to a state by its 3-digit prefix; only CA, TX and NY have their own insurance multiplier and $/kWh. Any other valid location uses the default (1.0×, $0.15).","Where do NY values come from? They are estimates inside the spec's allowed ranges."],
+["Data","","What happens with an invalid location?","The API validator accepts a zip, a state or DEFAULT; anything else silently falls back to DEFAULT per the README.","Is silent fallback good UX? Debatable. The user isn't told."],
+["API","★","What are the API's error cases?","400 VALIDATION_ERROR (bad JSON or input; first error only), 404 NO_MATCHES, 500 INTERNAL_ERROR with details logged but not returned.","Why hide 500 details? To avoid leaking internals."],
+["API","","How does the spec's error design differ from the code?","The spec lists codes like ERR_NO_MATCHES (and says an invalid reliability should default to 70); the API uses VALIDATION_ERROR/NO_MATCHES/INTERNAL_ERROR. The README documents the implemented behaviour.","Which is authoritative? The README and code describe what actually runs."],
+["Testing","★","How do you know it works?","105 Vitest tests pass (I re-ran them): TCO against hand-calculated values, every score in 0–100, filters, ordering, explanation length, validation, API statuses, and the spec's three examples.","Is that enough? It shows spec conformance, not real-world usefulness."],
+["Testing","★","Is there CI?","No. There is no workflow in the repo; tests run only when someone runs <code>npm test</code>. GitHub Actions on push is the obvious next step.","How would you add it? A workflow with Node 20.9+ running install, typecheck and test."],
+["Testing","","What isn't tested?","No browser/UI tests, no load or performance test, and the spec's &lt;1s criterion is unmeasured beyond one 25 ms sample.","Any manual testing evidence? None recorded in the repo."],
+["Testing","","Spec says Tesla's TCO score is 85 but you test 64. Why?","The spec's explanatory text is inconsistent with its own formula: 100 − 28,996/80,000×100 = 64. The total of 85 does match with 64. The test comment records this.","What does it say about the spec? It had internal inconsistencies that implementation exposed."],
+["Process","★","What part did AI play?","The code was produced with an AI assistant (Claude Code) from SPEC.md. My role was writing and approving the spec, reviewing, running tests and being able to explain the result.","How do you know the AI's code is correct? Tests against hand-calculated values and reading the formulas against the spec. I have not independently audited every line."],
+["Process","","What is spec-driven development, and what did it buy you?","Writing detailed formulas, data types, test cases and examples first, then building to them. It made behaviour checkable and let the assistant implement unambiguously.","What did it cost? Spec errors get copied faithfully, such as the hybrid factor."],
+["Process","","How did the build proceed?","Following the spec's 5-phase checklist. Git history shows two commits: engine + API + UI + tests together, then the README.","Do you have finer history? No."],
+["Stack","★","Why Next.js, React and TypeScript?","One codebase serves UI and API, deploys easily to Vercel, and types are shared between engine, API and UI.","Why not a separate backend? Overkill for a stateless engine with no database."],
+["Stack","","Why rule-based scoring rather than machine learning?","No labelled data exists; rules are explainable and verifiable by hand, which suits a graded project and user trust.","When would ML help? With real purchase or satisfaction data to learn weights."],
+["Limits","★","What are the biggest weaknesses?","Estimated hardcoded data, one-off weights with no sensitivity analysis, the hybrid 0.6 penalty, coarse regions (3 states), fixed gas price and mileage, no CI, no user validation.","Which one would you fix first? Data source, since every result depends on it."],
+["Limits","","What happens with a $12,000 budget?","The cheapest car is $17,500 and the price ceiling is 1.2× budget, so budgets under about $14,600 return NO_MATCHES.","Should the UI prevent this? A good improvement."],
+["Limits","","A $50,000 budget shows cheap cars. Is that right?","There is no lower bound, so under-budget cars score 100 on budget fit. It reflects 'we never penalise saving money', but may surprise users.","Alternative? Add a minimum price or a luxury-use floor."],
+["Limits","","Is it secure and private?","It is stateless: no accounts, no storage, no analytics, no secrets or env variables. Input is validated server-side.","Is rate limiting present? No."],
+["Future","","What would you do with another two weeks?","Replace the catalog with sourced data in a database, add CI, UI and load tests, let users adjust weights, add fuel price and mileage inputs, cover more states, and run a sensitivity analysis.","How would you evaluate recommendation quality? Compare against expert picks or gather user ratings."]
+];
+const bank=document.getElementById('bank'),q=document.getElementById('q'),so=document.getElementById('starOnly'),cnt=document.getElementById('count');
+let cat='';
+QA.forEach(([c,s,qq,a,f],i)=>{
+ if(c!==cat){cat=c;const h=document.createElement('div');h.className='cat';h.textContent=c;h.dataset.cat=c;bank.appendChild(h)}
+ const d=document.createElement('details');d.dataset.star=s?'1':'';d.dataset.cat=c;
+ d.innerHTML='<summary>'+(s?'<span class="star">★</span> ':'')+(i+1)+'. '+qq+'</summary><p>'+a+'</p><p class="fu"><b>Follow-up:</b> '+f+'</p>';
+ d.dataset.text=(qq+' '+a+' '+f).toLowerCase();bank.appendChild(d);
+});
+function apply(){
+ const t=q.value.trim().toLowerCase(),only=so.classList.contains('on');let n=0;const seen={};
+ bank.querySelectorAll('details').forEach(d=>{const ok=(!only||d.dataset.star)&&(!t||d.dataset.text.includes(t));d.hidden=!ok;if(ok){n++;seen[d.dataset.cat]=1}});
+ bank.querySelectorAll('.cat').forEach(h=>h.hidden=!seen[h.dataset.cat]);
+ cnt.textContent=n+' of '+QA.length+' questions shown';
+}
+q.oninput=apply;
+so.onclick=()=>{so.classList.toggle('on');apply()};
+document.getElementById('openAll').onclick=()=>bank.querySelectorAll('details:not([hidden])').forEach(d=>d.open=true);
+document.getElementById('closeAll').onclick=()=>bank.querySelectorAll('details').forEach(d=>d.open=false);
+apply();
+const tb=document.getElementById('theme'),root=document.documentElement,modes=['auto','light','dark'];
+let m='auto';try{m=localStorage.getItem('theme')||'auto'}catch(e){}
+function setTheme(){if(m==='auto')root.removeAttribute('data-theme');else root.setAttribute('data-theme',m);tb.textContent='Theme: '+m}
+tb.onclick=()=>{m=modes[(modes.indexOf(m)+1)%3];try{localStorage.setItem('theme',m)}catch(e){}setTheme()};
+setTheme();
+</script>
+</body>
+</html>
